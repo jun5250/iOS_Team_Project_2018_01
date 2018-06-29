@@ -59,7 +59,22 @@ class DetailViewController: UIViewController, UITableViewDelegate, UITableViewDa
             cell.configure(location: local1)
             return cell
         }
-    } 
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let indexPath = tableView.indexPathForSelectedRow
+        
+        let currentCell = tableView.cellForRow(at: indexPath!)! as UITableViewCell
+        
+        //getting the text of that cell
+        let currentItem = currentCell.textLabel!.text
+        
+        let alertController = UIAlertController(title: "Simplified iOS", message: "You Selected " + currentItem!, preferredStyle: .alert)
+        let defaultAction = UIAlertAction(title: "Close Alert", style: .default, handler: nil)
+        alertController.addAction(defaultAction)
+    
+        present(alertController, animated: true, completion: nil)
+    }
 
     //
     // MARK: - Navigation

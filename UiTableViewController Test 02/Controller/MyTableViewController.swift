@@ -2,9 +2,12 @@ import UIKit
 
 enum selectedScope:Int {
     case Ename = 0
-    case Eimage = 1
+    case Emenu = 1
     case Etype = 2
 }
+
+var myIndex = 0
+
 
 class MyTableViewController: UITableViewController, UISearchBarDelegate {
     
@@ -12,6 +15,9 @@ class MyTableViewController: UITableViewController, UISearchBarDelegate {
     let initialDataAry:[FoodStore] = FoodStore.generateModelArray()
     var dataAry:[FoodStore] = FoodStore.generateModelArray()
     
+    var filteredData = [String]()
+    
+    var isSearching = false
     
     
     override func viewDidLoad() {
@@ -19,13 +25,16 @@ class MyTableViewController: UITableViewController, UISearchBarDelegate {
         
         self.title = "DIT 배달통"
          self.searchBarSetup()
+        
+        
     }
     func searchBarSetup() {
         let searchBar = UISearchBar(frame: CGRect(x:0,y:0,width:(UIScreen.main.bounds.width),height:70))
         searchBar.showsScopeBar = true
-        searchBar.scopeButtonTitles = ["이름","이미지","타입"]
+        searchBar.scopeButtonTitles = ["이름","음식","종류"]
         searchBar.selectedScopeButtonIndex = 0
         searchBar.delegate = self
+        searchBar.returnKeyType = UIReturnKeyType.done
         self.tableView.tableHeaderView = searchBar
     }
     
@@ -47,10 +56,10 @@ class MyTableViewController: UITableViewController, UISearchBarDelegate {
                 return mod.name.lowercased().contains(text.lowercased())
             })
             self.tableView.reloadData()
-        case selectedScope.Eimage.rawValue:
+        case selectedScope.Emenu.rawValue:
             //fix of not searching when backspacing
             dataAry = initialDataAry.filter({ (mod) -> Bool in
-                return mod.image.lowercased().contains(text.lowercased())
+                return mod.menu.lowercased().contains(text.lowercased())
             })
             self.tableView.reloadData()
         case selectedScope.Etype.rawValue:
@@ -74,9 +83,9 @@ class MyTableViewController: UITableViewController, UISearchBarDelegate {
         // #warning Incomplete implementation, return the number of rows
         //return foodStoreNames.count
         
-//        if isSearching{
-//            return  
-//        }
+        if isSearching {
+            return filteredData.count
+        }
         
         return dataAry.count
     }
@@ -91,17 +100,18 @@ class MyTableViewController: UITableViewController, UISearchBarDelegate {
 
         cell.foodStoreCellAddress.text = model.address
         cell.foodStoreCellTel.text = model.type
-
-
-//       cell.foodStoreCellName.text = foodStores[indexPath.row].name
-//       cell.foodStoreCellImage.image = UIImage(named: foodStores[indexPath.row].image)
-//       cell.foodStoreCellAddress.text = foodStores[indexPath.row].address
-//       cell.foodStoreCellTel.text = foodStores[indexPath.row].tel
         
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        myIndex = indexPath.row
+        
+        
+//        let alert = UIAlertController(title: "얼러터", message: "기모띠", preferredStyle: .alert)
+//        alert.addAction(UIAlertAction(title: "오케이", style: .default, handler: nil))
+//        present(alert, animated: true, completion: nil)
 
     }
     
