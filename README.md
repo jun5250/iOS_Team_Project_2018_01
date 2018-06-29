@@ -1,4 +1,4 @@
-# DIT FoodStore Finder v0.1
+# README
 
 ----
 기말 코딩 시험 참고
