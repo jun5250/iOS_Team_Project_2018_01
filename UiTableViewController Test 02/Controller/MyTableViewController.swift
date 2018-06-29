@@ -1,52 +1,67 @@
 import UIKit
 
-class MyTableViewController: UITableViewController {
+enum selectedScope:Int {
+    case Ename = 0
+    case Eimage = 1
+    case Etype = 2
+}
+
+class MyTableViewController: UITableViewController, UISearchBarDelegate {
     
-    /*
-    var foodStoreNames = ["늘해랑", "번개반점", "아딸", "왕짜장", "토마토 도시락", "홍콩반점"]
-    var foodStoreThumbnail = ["01", "02", "03", "04", "05", "06"]
-    var foodStoreAddress = ["부산광역시 부산진구 양정1동 350-1",
-                            "부산광역시 부산진구 양정동 418-282",
-                            "부산광역시 부산진구 양정동 393-18",
-                            "부산광역시 부산진구 양정1동 356-22",
-                            "부산광역시 부산진구 양정1동 산19-8",
-                            "부산광역시 부산진구 양정동 353-38"]
-    var foodStoreTel = ["051-863-6997",
-                        "051-852-9969",
-                        "051-852-9969",
-                        "051-852-9969",
-                        "051-852-9969",
-                        "051-853-0410"]
-    var foodMenus = ["수육백반, 돼지국밥, 순대국밥, 내장국밥",
-                     "짜장면, 짬뽕, 짬짜면, 탕수육, 탕짜면, 군만두, 양장피",
-                     "떡볶이, 오뎅, 떡강정, 핫도그, 튀김",
-                     "짜장면, 짬뽕, 짬짜면, 탕수육, 볶짜면, 군만두, 양장피",
-                     "치킨마요, 참치마요, 돈불와퍼, 돈치와퍼, 돈까스카레",
-                     "짬뽕, 짜장면, 짬뽕밥, 볶음밥, 탕수육, 군만두"
-    ]
     
-    var foodStoreType = ["돼지국밥집", "중화요리", "분식점", "중화요리", "도시락", "중화요리"]
-   */
+    let initialDataAry:[FoodStore] = FoodStore.generateModelArray()
+    var dataAry:[FoodStore] = FoodStore.generateModelArray()
     
-    // 데이터 클래스 객체 생성
-    var foodStores:[FoodStore] = [
-        FoodStore(name: "늘해랑", image: "01", address: "부산광역시 부산진구 양정1동 350-1", tel: "051-863-6997", menu: "수육백반, 돼지국밥, 순대국밥, 내장국밥", type: "돼지국밥집"),
-        FoodStore(name: "번개반점", image: "02", address: "부산광역시 부산진구 양정동 418-282", tel: "051-852-9969", menu: "짜장면, 짬뽕, 짬짜면, 탕수육, 탕짜면, 군만두, 양장피", type: "중화요리"),
-        FoodStore(name: "아딸", image: "03", address: "부산광역시 부산진구 양정동 393-18", tel: "051-852-9969", menu: "떡볶이, 오뎅, 떡강정, 핫도그, 튀김", type: "분식점"),
-        FoodStore(name: "왕짜장", image: "04", address: "부산광역시 부산진구 양정1동 356-22", tel: "051-863-6997", menu: "짜장면, 짬뽕, 짬짜면, 탕수육, 볶짜면, 군만두, 양장피", type: "중화요리"),
-        FoodStore(name: "토마토 도시락", image: "05", address: "부산광역시 부산진구 양정1동 산19-8", tel: "051-863-6997", menu: "치킨마요, 참치마요, 돈불와퍼, 돈치와퍼, 돈까스카레", type: "도시락"),
-        FoodStore(name: "홍콩반점", image: "06", address: "부산광역시 부산진구 양정동 353-38", tel: "051-863-6997", menu: "짬뽕, 짜장면, 짬뽕밥, 볶음밥, 탕수육, 군만두", type: "중화요리"),
-    ]
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
-        
         self.title = "DIT 배달통"
+         self.searchBarSetup()
+    }
+    func searchBarSetup() {
+        let searchBar = UISearchBar(frame: CGRect(x:0,y:0,width:(UIScreen.main.bounds.width),height:70))
+        searchBar.showsScopeBar = true
+        searchBar.scopeButtonTitles = ["이름","이미지","타입"]
+        searchBar.selectedScopeButtonIndex = 0
+        searchBar.delegate = self
+        self.tableView.tableHeaderView = searchBar
+    }
+    
+    // MARK: - search bar delegate
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isEmpty {
+            dataAry = initialDataAry
+            self.tableView.reloadData()
+        }else {
+            filterTableView(ind: searchBar.selectedScopeButtonIndex, text: searchText)
+        }
+    }
+    
+    func filterTableView(ind:Int,text:String) {
+        switch ind {
+        case selectedScope.Ename.rawValue:
+            //fix of not searching when backspacing
+            dataAry = initialDataAry.filter({ (mod) -> Bool in
+                return mod.name.lowercased().contains(text.lowercased())
+            })
+            self.tableView.reloadData()
+        case selectedScope.Eimage.rawValue:
+            //fix of not searching when backspacing
+            dataAry = initialDataAry.filter({ (mod) -> Bool in
+                return mod.image.lowercased().contains(text.lowercased())
+            })
+            self.tableView.reloadData()
+        case selectedScope.Etype.rawValue:
+            //fix of not searching when backspacing
+            dataAry = initialDataAry.filter({ (mod) -> Bool in
+                return mod.type.lowercased().contains(text.lowercased())
+            })
+            self.tableView.reloadData()
+        default:
+            print("no type")
+        }
     }
     
     // MARK: - Table view data source
@@ -58,32 +73,36 @@ class MyTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         //return foodStoreNames.count
-        return foodStores.count
+        
+//        if isSearching{
+//            return  
+//        }
+        
+        return dataAry.count
     }
     
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "RE", for: indexPath)
-            as! FoodStoreTableViewCell
-        // Configure the cell...
-        
-//        cell.foodStoreCellName.text = foodStoreNames[indexPath.row]
-//        cell.foodStoreCellImage.image = UIImage(named: foodStoreThumbnail[indexPath.row])
-//        cell.foodStoreCellAddress.text = foodStoreAddress[indexPath.row]
-//        cell.foodStoreCellTel.text = foodStoreTel[indexPath.row]
-        
-        cell.foodStoreCellName.text = foodStores[indexPath.row].name
-        cell.foodStoreCellImage.image = UIImage(named: foodStores[indexPath.row].image)
-        cell.foodStoreCellAddress.text = foodStores[indexPath.row].address
-        cell.foodStoreCellTel.text = foodStores[indexPath.row].tel
+        let cell = tableView.dequeueReusableCell(withIdentifier: "RE", for: indexPath) as! FoodStoreTableViewCell
+        let model = dataAry[indexPath.row]
+        cell.foodStoreCellName.text = model.name
+
+        cell.foodStoreCellImage.image = UIImage(named: model.image)
+
+        cell.foodStoreCellAddress.text = model.address
+        cell.foodStoreCellTel.text = model.type
+
+
+//       cell.foodStoreCellName.text = foodStores[indexPath.row].name
+//       cell.foodStoreCellImage.image = UIImage(named: foodStores[indexPath.row].image)
+//       cell.foodStoreCellAddress.text = foodStores[indexPath.row].address
+//       cell.foodStoreCellTel.text = foodStores[indexPath.row].tel
         
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        print(indexPath.row)
-//        print(foodStoreNames[indexPath.row])
-//        print(foodStoreTel[indexPath.row])
+
     }
     
     // MARK: - Navigation
@@ -94,33 +113,22 @@ class MyTableViewController: UITableViewController {
         if segue.identifier == "showDetail" {
             if let indexPath =  tableView.indexPathForSelectedRow {
                 let destinationController = segue.destination as! DetailViewController
-                // 이름 넘기기
-//                destinationController.name = foodStoreNames[indexPath.row]
-//                // 이미지 넘기기
-//                destinationController.cellImage = foodStoreThumbnail[indexPath.row]
-//                destinationController.local1 = foodStoreAddress[indexPath.row]
-//                destinationController.tel1 = foodStoreTel[indexPath.row]
-//                destinationController.menu = foodMenus[indexPath.row]
-//                destinationController.type = foodStoreType[indexPath.row]
+
+                let model = dataAry[indexPath.row]
+
                 
-                destinationController.name = foodStores[indexPath.row].name
+                destinationController.name = model.name
                 // 이미지 넘기기
-                destinationController.cellImage = foodStores[indexPath.row].image
-                destinationController.local1 = foodStores[indexPath.row].address
-                destinationController.tel1 = foodStores[indexPath.row].tel
-                destinationController.menu = foodStores[indexPath.row].menu
-                destinationController.type = foodStores[indexPath.row].type
+                destinationController.cellImage = model.image
+                destinationController.local1 = model.address
+                destinationController.tel1 = model.tel
+                destinationController.menu = model.menu
+                destinationController.type = model.type
                 
             }
         } else if segue.identifier == "totalMapView" {
                 let destinationController = segue.destination as! TotalMapViewController
-                    destinationController.totalFoodStores = foodStores
-                // 이미지 넘기기
-                //destinationController.cellImage = foodStoreThumbnail[indexPath.row]
-                //destinationController.locations = foodStores[IndexPath.row
-                //destinationController.tel1 = foodStoreTel[indexPath.row]
-                //destinationController.menu = foodMenus[indexPath.row]
-                //destinationController.type = foodStoreType
+                    destinationController.totalFoodStores = dataAry
         }
     }
 }
