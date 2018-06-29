@@ -64,9 +64,14 @@ class DetailViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let indexPath = tableView.indexPathForSelectedRow
         
+        print(indexPath!)
+        
+        if(indexPath! == [0, 1]){
+        
         let currentCell = tableView.cellForRow(at: indexPath!)! as UITableViewCell
         
-        //getting the text of that cell
+        print(currentCell)
+        
         let currentItem = currentCell.textLabel!.text
         
         let alertController = UIAlertController(title: "Simplified iOS", message: "You Selected " + currentItem!, preferredStyle: .alert)
@@ -74,6 +79,8 @@ class DetailViewController: UIViewController, UITableViewDelegate, UITableViewDa
         alertController.addAction(defaultAction)
     
         present(alertController, animated: true, completion: nil)
+        }
+        
     }
 
     //
